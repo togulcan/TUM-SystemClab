@@ -2,18 +2,14 @@
 #include "tlm.h"
 #include "tlm_utils/simple_initiator_socket.h"
 
-// to make things easier readable ...
 using namespace sc_core;
 using namespace tlm;
 using namespace tlm_utils;
 
 SC_MODULE(consumer) {
 public:
-	// ############# COMPLETE THE FOLLOWING SECTION ############# //
 	// initiator socket to connect consumer to FIFO
-	simple_target_socket<target> consum2fifo_socket;
-
-	// ####################### UP TO HERE ####################### //
+	simple_initiator_socket<consumer> consum2fifo_socket;
 
 private:
 	// event for communication between fetch_trigger() and consumer() processes

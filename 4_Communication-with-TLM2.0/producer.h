@@ -2,17 +2,14 @@
 #include "tlm.h"
 #include "tlm_utils/simple_initiator_socket.h"
 
-// to make things more readable ...
 using namespace sc_core;
 using namespace tlm;
 using namespace tlm_utils;
 
 SC_MODULE(producer) {
 public:
-	// ############# COMPLETE THE FOLLOWING SECTION ############# //
 	// initiator socket to connect producer to FIFO
-
-	// ####################### UP TO HERE ####################### //
+	simple_initiator_socket<producer> prod2fifo_socket;
 
 private:
 	// event for communication between send_trigger() and producer() processes

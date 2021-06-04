@@ -16,10 +16,9 @@ fifo_3::fifo_3(sc_module_name name, unsigned int fifo_size) :
 		r_peq("read_peq"),
 		w_peq("write_peq")
 {
-	// ############# COMPLETE THE FOLLOWING SECTION ############# //
 	// register nb_transport_fw function with sockets
-
-	// ####################### UP TO HERE ####################### //
+	fifo2prod_socket.register_nb_transport_fw(this, &fifo_3::nb_transport_fw);
+	fifo2consum_socket.register_nb_transport_fw(this, &fifo_3::nb_transport_fw);
 
 	// register the read and write processes with the simulation kernel
 	SC_THREAD(read_fifo);
@@ -50,11 +49,11 @@ void fifo_3::read_fifo() {
 		// wait for read to be triggered from read payload event queue
 		wait();
 
-		// ############# COMPLETE THE FOLLOWING SECTION ############# //
 		// get the transaction out of the read payload event queue and get
 		// information from generic payload
 		payload = r_peq.get_next_transaction();
-		// ####################### UP TO HERE ####################### //
+		len = payload->get_data_length();
+		ptr = payload->get_data_ptr();
 
 		if(fill_level < len) {	// not enough data to read
 			len = fill_level;	// none or less data will be read
@@ -63,20 +62,21 @@ void fifo_3::read_fifo() {
 		else
 			status = TLM_OK_RESPONSE;
 
-		// ############# COMPLETE THE FOLLOWING SECTION ############# //
-		// handle write
-
-		// ####################### UP TO HERE ####################### //
-
+		// handle read
+		for(unsigned int i=0; i < len; i++){
+			*(ptr + i) = *(fifo_data + rd_ptr);
+			rd_ptr++;
+			fill_level--;
+			if(rd_ptr == fifo_size)
+				rd_ptr = 0;
+		}
 		if(fifo_size <= 50)
 			output_fifo_status();
 
-		// ############# COMPLETE THE FOLLOWING SECTION ############# //
 		// prepare backward call, call nb_transport_bw, and evaluate response
-		phase = BEGIN_RSP;
+		phase = BEGIN_RESP;
 		delay = SC_ZERO_TIME;
-		resp = fifo2consum_socket.nb_transport_bw(*payload, phase, delay);
-		// ####################### UP TO HERE ####################### //
+		fifo2consum_socket->nb_transport_bw(*payload, phase, delay);
 	}
 }
 
@@ -95,11 +95,10 @@ void fifo_3::write_fifo() {
 		// wait for write to be triggered from write payload event queue
 		wait();
 
-		// ############# COMPLETE THE FOLLOWING SECTION ############# //
 		// get the transaction out of the write payload event queue and get
 		// information from generic payload
-
-		// ####################### UP TO HERE ####################### //
+		payload = w_peq.get_next_transaction();
+		len = payload->get_data_length();
 
 		if(fill_level + (int)len > fifo_size) { // not enough space for all data
 			len = fifo_size - fill_level;		// none or less data will be written
@@ -108,18 +107,23 @@ void fifo_3::write_fifo() {
 		else
 			status = TLM_OK_RESPONSE;
 
-		// ############# COMPLETE THE FOLLOWING SECTION ############# //
 		// handle write
-
-		// ####################### UP TO HERE ####################### //
+		ptr = payload->get_data_ptr();
+		for(unsigned int i=0; i < len; i++){
+			*(fifo_data + wr_ptr) = *(ptr + i);
+			wr_ptr++;
+			fill_level++;
+			if(wr_ptr == fifo_size)
+				wr_ptr = 0;
+		}
 
 		if(fifo_size <= 50)
 			output_fifo_status();
 
-		// ############# COMPLETE THE FOLLOWING SECTION ############# //
 		// prepare backward call, call nb_transport_bw, and evaluate response
-
-		// ####################### UP TO HERE ####################### //
+		phase = BEGIN_RESP;
+		delay = SC_ZERO_TIME;
+		fifo2prod_socket->nb_transport_bw(*payload, phase, delay);
 	}
 }
 
@@ -138,10 +142,9 @@ tlm_sync_enum fifo_3::nb_transport_fw(
 		exit(1);
 	}
 
-	// ############# COMPLETE THE FOLLOWING SECTION ############# //
 	// determine operation and how much data is involved
-
-	// ####################### UP TO HERE ####################### //
+	tlm_command cmd = payload.get_command();
+	unsigned int len = payload.get_data_length();
 
 	if(cmd == TLM_WRITE_COMMAND) {
 		// increase delay to cycle time multiplied by number of words written
@@ -163,10 +166,9 @@ tlm_sync_enum fifo_3::nb_transport_fw(
 		payload.set_response_status(TLM_OK_RESPONSE);
 	}
 
-	// ############# COMPLETE THE FOLLOWING SECTION ############# //
 	// finish the first phase of the transaction
-
-	// ####################### UP TO HERE ####################### //
+	phase = END_REQ;
+	return TLM_UPDATED;
 }
 
 // helper function to output content of FIFO

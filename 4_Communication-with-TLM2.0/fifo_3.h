@@ -3,19 +3,15 @@
 #include "tlm_utils/simple_target_socket.h"
 #include "tlm_utils/peq_with_get.h"
 
-// to make things easier readable ...
 using namespace sc_core;
 using namespace tlm;
 using namespace tlm_utils;
 
 SC_MODULE(fifo_3) {
 public:
-	// ############# COMPLETE THE FOLLOWING SECTION ############# //
 	// target sockets to connect FIFO with producer and consumer
-    simple_target_socket<target> fifo2prod_socket;
-	simple_target_socket<target> fifo2consum_socket;
-
-	// ####################### UP TO HERE ####################### //
+    simple_target_socket<fifo_3> fifo2prod_socket;
+	simple_target_socket<fifo_3> fifo2consum_socket;
 
 private:
 	const unsigned int fifo_size;
@@ -45,8 +41,7 @@ private:
 	void output_fifo_status();
 
 public:
-	// ############# COMPLETE THE FOLLOWING SECTION ############# //
 	// constructor declaration
-
-	// ####################### UP TO HERE ####################### //
+	SC_HAS_PROCESS(fifo_3);
+	fifo_3(sc_module_name name, unsigned int fifo_size=50);
 };
