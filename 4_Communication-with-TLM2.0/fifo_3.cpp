@@ -74,6 +74,8 @@ void fifo_3::read_fifo() {
 			output_fifo_status();
 
 		// prepare backward call, call nb_transport_bw, and evaluate response
+		payload->set_response_status(status);
+		payload->set_data_length(len);
 		phase = BEGIN_RESP;
 		delay = SC_ZERO_TIME;
 		fifo2consum_socket->nb_transport_bw(*payload, phase, delay);
@@ -121,6 +123,8 @@ void fifo_3::write_fifo() {
 			output_fifo_status();
 
 		// prepare backward call, call nb_transport_bw, and evaluate response
+		payload->set_response_status(status);
+		payload->set_data_length(len);
 		phase = BEGIN_RESP;
 		delay = SC_ZERO_TIME;
 		fifo2prod_socket->nb_transport_bw(*payload, phase, delay);
