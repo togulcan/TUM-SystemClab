@@ -27,6 +27,6 @@ public:
 	unsigned int fill_level;
 
 	// constructor declaration
-    SC_HAS_PROCESS(fifo_1b);
-    fifo_1b(sc_module_name name, unsigned int fifo_size=5);
+	SC_HAS_PROCESS(fifo_1b);
+	fifo_1b(sc_module_name name, unsigned int fifo_size=5);
 };

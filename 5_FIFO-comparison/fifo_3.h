@@ -10,7 +10,7 @@ using namespace tlm_utils;
 SC_MODULE(fifo_3) {
 public:
 	// target sockets to connect FIFO with producer and consumer
-    simple_target_socket<fifo_3> fifo2prod_socket;
+	simple_target_socket<fifo_3> fifo2prod_socket;
 	simple_target_socket<fifo_3> fifo2consum_socket;
 
 private:

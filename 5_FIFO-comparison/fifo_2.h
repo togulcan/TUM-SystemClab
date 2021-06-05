@@ -20,8 +20,8 @@ public:
 	bool write_fifo(unsigned char *data, unsigned int &count);
 
 	// constructor declaration
-    SC_HAS_PROCESS(fifo_2);
-    fifo_2(sc_module_name name, unsigned int fifo_size=50);
+	SC_HAS_PROCESS(fifo_2);
+	fifo_2(sc_module_name name, unsigned int fifo_size=50);
 };
 
 #endif // __FIFO_2

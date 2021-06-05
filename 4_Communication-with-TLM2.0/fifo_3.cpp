@@ -65,11 +65,10 @@ void fifo_3::read_fifo() {
 		// handle read
 		for(unsigned int i=0; i < len; i++){
 			*(ptr + i) = *(fifo_data + rd_ptr);
-			rd_ptr++;
+			rd_ptr = (rd_ptr + 1) % fifo_size;
 			fill_level--;
-			if(rd_ptr == fifo_size)
-				rd_ptr = 0;
 		}
+
 		if(fifo_size <= 50)
 			output_fifo_status();
 
@@ -113,10 +112,8 @@ void fifo_3::write_fifo() {
 		ptr = payload->get_data_ptr();
 		for(unsigned int i=0; i < len; i++){
 			*(fifo_data + wr_ptr) = *(ptr + i);
-			wr_ptr++;
+			wr_ptr = (wr_ptr + 1) % fifo_size;
 			fill_level++;
-			if(wr_ptr == fifo_size)
-				wr_ptr = 0;
 		}
 
 		if(fifo_size <= 50)

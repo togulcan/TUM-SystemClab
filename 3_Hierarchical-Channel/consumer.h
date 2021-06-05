@@ -9,7 +9,7 @@ SC_MODULE(consumer) {
 
 public:
 	// declare the port of the module
-    sc_port<fifo_if> consum2fifo_port;
+	sc_port<fifo_if> consum2fifo_port;
 
 private:
 	// event for communication between consumer() and fetch_trigger()
