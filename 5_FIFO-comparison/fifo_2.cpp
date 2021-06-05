@@ -34,8 +34,8 @@ bool fifo_2::write_fifo(unsigned char *data, unsigned int &count) {
         fill_level++;
         if(wr_ptr == fifo_size) wr_ptr = 0;
     }
-	if(fifo_size <= 50)
-		output_fifo_status();
+	//if(fifo_size <= 50)
+	//	output_fifo_status();
 	return result;
 }
 
@@ -65,8 +65,8 @@ bool fifo_2::read_fifo(unsigned char *data, unsigned int &count) {
             rd_ptr = 0;
     }
 
-	if(fifo_size <= 50)
-		output_fifo_status();
+	//if(fifo_size <= 50)
+	//	output_fifo_status();
 	return result;
 }
 

@@ -1,0 +1,16 @@
+Test mode: 1
+         0 s: 'testbench' starting TEST_FIFO_1A
+213320300 ns: 'testbench' TEST_FIFO_1A finished. Test time was 1.21986 seconds.
+
+213320300 ns: 'testbench' starting TEST_FIFO_1B
+423307200 ns: 'testbench' TEST_FIFO_1B finished. Test time was 1.1491 seconds.
+
+423307200 ns: 'testbench' starting TEST_FIFO_2
+635488700 ns: 'testbench' TEST_FIFO_2 finished. Test time was 0.0151694 seconds.
+
+635488700 ns: 'testbench' starting TEST_FIFO_3
+   843773 us: 'testbench' TEST_FIFO_3 finished. Test time was 0.00972109 seconds.
+
+   843773 us: 'testbench' stopping simulation
+
+Info: /OSCI/SystemC: Simulation stopped by user.

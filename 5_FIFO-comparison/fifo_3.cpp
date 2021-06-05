@@ -70,8 +70,8 @@ void fifo_3::read_fifo() {
 			if(rd_ptr == fifo_size)
 				rd_ptr = 0;
 		}
-		if(fifo_size <= 50)
-			output_fifo_status();
+//		if(fifo_size <= 50)
+//			output_fifo_status();
 
 		// prepare backward call, call nb_transport_bw, and evaluate response
 		payload->set_response_status(status);
@@ -119,8 +119,8 @@ void fifo_3::write_fifo() {
 				wr_ptr = 0;
 		}
 
-		if(fifo_size <= 50)
-			output_fifo_status();
+//		if(fifo_size <= 50)
+//			output_fifo_status();
 
 		// prepare backward call, call nb_transport_bw, and evaluate response
 		payload->set_response_status(status);
@@ -140,9 +140,9 @@ tlm_sync_enum fifo_3::nb_transport_fw(
 {
 	// check whether transaction is initiated correctly
 	if(phase != BEGIN_REQ) {
-		cout << std::setw(9) << sc_time_stamp() << ": '" << name()
-				<< "'\tprotocol error! "
-				<< "nb_transport_fw call with phase!=BEGIN_REQ!" << endl;
+//		cout << std::setw(9) << sc_time_stamp() << ": '" << name()
+//				<< "'\tprotocol error! "
+//				<< "nb_transport_fw call with phase!=BEGIN_REQ!" << endl;
 		exit(1);
 	}
 
