@@ -18,21 +18,21 @@ bool fifo_2::write_fifo(unsigned char *data, unsigned int &count) {
 	ptr = data;
 	sc_time delay;
 
-	if(fill_level + (int)count > fifo_size) // not enough space for all data
+	if(fill_level + (int)count > fifo_size) {// not enough space for all data
 		len = fifo_size - fill_level; 		// none or less data will be written
+		count = len;
+	}
 	else {
 		len = count;
 		result = true;
 	}
 
 	// complete process
-
     for(unsigned int i=0; i < len; i++){
         *(fifo_data + wr_ptr) = *(ptr + i);
         wr_ptr++;
         fill_level++;
-        if(wr_ptr == fifo_size)
-            wr_ptr = 0;
+        if(wr_ptr == fifo_size) wr_ptr = 0;
     }
 	if(fifo_size <= 50)
 		output_fifo_status();
@@ -47,8 +47,10 @@ bool fifo_2::read_fifo(unsigned char *data, unsigned int &count) {
 	ptr = data;
 	sc_time delay;
 
-	if(fill_level < count)	// not enough data to read
+	if(fill_level < count){	// not enough data to read
 		len = fill_level;	// none or less data will be read
+		count = len;
+	}
 	else {
 		len = count;
 		result = true;
