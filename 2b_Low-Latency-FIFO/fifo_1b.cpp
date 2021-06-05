@@ -18,38 +18,35 @@ fifo_1b::fifo_1b(sc_module_name name, unsigned int fifo_size) : fifo_size(fifo_s
 }
 
 void fifo_1b::read_write_fifo() {
-	unsigned int current_size = 0;
     while(true){
         wait();
         unsigned char rd_pos = rd_ptr.read();
         unsigned char wr_pos = wr_ptr.read();
         if(wr_en.read() == true && full.read() == false){
             unsigned char data = d_in.read();
-            if(current_size == 0 && valid.read() == false){
-                d_out.write(data);
-                valid.write(true);
+            if(fill_level == 0 && valid.read() == false){
+	            d_out.write(data);
+	            valid.write(true);
             }
-            else if(current_size == fifo_size)
-                full.write(true);
-            else{
-                full.write(false);
-                *(fifo_data + wr_pos) = data;
-                wr_ptr.write(++wr_pos);
-                current_size++;
-                if(wr_pos == fifo_size)
-                    wr_ptr.write(0);
-            }
+			else{
+	            *(fifo_data + wr_pos) = data;
+	            wr_ptr.write(++wr_pos);
+	            fill_level++;
+	            if(fill_level == fifo_size - 1) full.write(true);
+	            if(wr_pos == fifo_size) wr_ptr.write(0); // avoid segmentation fault
+			}
         }
         if(rd_en.read() == true && valid.read() == true){
-            if(current_size == 0)
+	        if(fill_level == 0)
                 valid.write(false);
             else{
                 unsigned char data = *(fifo_data + rd_pos);
-                d_out.write(data);
-                rd_ptr.write(++rd_pos);
-                current_size--;
-                if(rd_pos == fifo_size)
-                    rd_ptr.write(0);
+		        rd_ptr.write(++rd_pos);
+		        d_out.write(data);
+		        valid.write(true);
+                fill_level--;
+                full.write(false);
+                if(rd_pos == fifo_size) rd_ptr.write(0); // avoid segmentation fault
             }
         }
     }
