@@ -164,6 +164,7 @@ private:
 	// You may add additional function from here...
 	//#############################################
 
+	void discardDescriptor();
 
 
 	//#############################################
