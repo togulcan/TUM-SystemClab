@@ -13,8 +13,8 @@ using namespace sc_core;
 int sc_main(int argc, char *argv[]) {
 
 	// set some global variables; see $HOME/npu_common/globaldefs.h
-	do_logging = 0x0;
-	MAX_PACKETS = 20;
+	do_logging = 0x00;
+	MAX_PACKETS = 4000;
 
 	/*********************************************************************/
 	/*                           modules                                 */
