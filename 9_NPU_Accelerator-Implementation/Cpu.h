@@ -177,7 +177,14 @@ private:
 	// You may add additional function from here...
 	//#############################################
 
+	void startTransactionTimingWrapped(tlm_command command, soc_address_t address,
+		unsigned char *data, unsigned int dataSize);
 
+	void discardDescriptor();
+
+	void discardDescriptorTimingWrapped();
+
+	std::vector<soc_address_t> outports{0x20000000, 0x30000000, 0x40000000, 0x50000000};
 
 	//#############################################
 	// Until here

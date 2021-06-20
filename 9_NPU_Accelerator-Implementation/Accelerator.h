@@ -70,6 +70,8 @@ public:
 
 	// ############# COMPLETE THE FOLLOWING SECTION ############# //
 	// Write down the Declaration of the Constructor of the Parameterized Accelerator module
+	SC_HAS_PROCESS(Accelerator);
+	Accelerator(sc_module_name name, unsigned int ACC_IP_LOOKUP_CYCLES);
 
 	// ####################### UP TO HERE ####################### //
 
