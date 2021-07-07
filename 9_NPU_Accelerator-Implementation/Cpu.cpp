@@ -21,24 +21,24 @@ void Cpu::processor_thread(void) {
 
 		while(packetReceived_interrupt.read()) {
 			// read descriptor
-			startTransactionTimingWrapped(TLM_READ_COMMAND,
+			startTransaction(TLM_READ_COMMAND,
 			                 0x10000000,
 			                 (unsigned char *) &m_packet_descriptor,
 			                 sizeof(m_packet_descriptor));
 
 			// read header packet
-			startTransactionTimingWrapped(TLM_READ_COMMAND,
+			startTransaction(TLM_READ_COMMAND,
 			                 0x00000000 + m_packet_descriptor.baseAddress,
 			                 (unsigned char *) &m_packet_header,
 			                 sizeheader);
 
+			integrity = verifyHeaderIntegrity(m_packet_header);
 			MEASURE_PROCESSING_TIME(
-					integrity = verifyHeaderIntegrity(m_packet_header);
 					wait(CPU_VERIFY_HEADER_CYCLES * CLK_CYCLE_CPU);
 			)
 
 			if(!integrity){
-				discardDescriptorTimingWrapped();
+				discardDescriptor();
 				continue;
 			}
 			else{
@@ -46,45 +46,47 @@ void Cpu::processor_thread(void) {
 					m_lookup_request.processorId = m_id;
 					m_lookup_request.destAddress = m_packet_header.getDestAddress();
 					// forward lookup_request to accelerator
-					startTransactionTimingWrapped(TLM_WRITE_COMMAND,
-					                              0x60000000,
-					                              (unsigned char *) &m_lookup_request,
-					                              sizeof(m_lookup_request));
+					startTransaction(TLM_WRITE_COMMAND,
+		                              0x60000000,
+		                              (unsigned char *) &m_lookup_request,
+		                              sizeof(m_lookup_request));
 
 					if(!lookupReady_interrupt.read())
 						wait(lookupReady_interrupt.value_changed_event());
-
 					// read from accelerator
-					startTransactionTimingWrapped(TLM_READ_COMMAND,
+					startTransaction(TLM_READ_COMMAND,
 					                              0x60000000,
 					                              (unsigned char *) &nextHop,
 					                              sizeof(unsigned int));
 				}
 				else{
+					nextHop = makeNHLookup(m_packet_header);
 					MEASURE_PROCESSING_TIME(
-							nextHop = makeNHLookup(m_packet_header);
 							wait(CPU_IP_LOOKUP_CYCLES * CLK_CYCLE_CPU);
 					)
 				}
 
 				// forward packet descriptor to output
-				startTransactionTimingWrapped(TLM_WRITE_COMMAND,
-				                              outports[nextHop],
-				                              (unsigned char *) &m_packet_descriptor,
-				                              sizeof(m_packet_descriptor));
+				startTransaction(TLM_WRITE_COMMAND,
+	                              outports[nextHop],
+	                              (unsigned char *) &m_packet_descriptor,
+	                              sizeof(m_packet_descriptor));
 
+				decrementTTL(m_packet_header);
 				MEASURE_PROCESSING_TIME(
-						decrementTTL(m_packet_header);
 						wait(CPU_DECREMENT_TTL_CYCLES * CLK_CYCLE_CPU);
-						updateChecksum(m_packet_header);
-						wait(CPU_UPDATE_CHECKSUM_CYCLES * CLK_CYCLE_CPU);
+				)
+
+				updateChecksum(m_packet_header);
+				MEASURE_PROCESSING_TIME(
+					wait(CPU_UPDATE_CHECKSUM_CYCLES * CLK_CYCLE_CPU);
 				)
 
 				// write header back to memory
-				startTransactionTimingWrapped(TLM_WRITE_COMMAND,
-				                              0x00000000 + m_packet_descriptor.baseAddress,
-				                              (unsigned char *) &m_packet_header,
-				                              sizeheader);
+				startTransaction(TLM_WRITE_COMMAND,
+	                              0x00000000 + m_packet_descriptor.baseAddress,
+	                              (unsigned char *) &m_packet_header,
+	                              sizeheader);
 			}
 			// ####################### UP TO HERE ####################### //
 		}
@@ -109,9 +111,10 @@ void Cpu::startTransaction(tlm_command command, soc_address_t address,
 		payload.set_data_ptr(data);
 		payload.set_data_length(dataSize);
 
-		tlm_resp = initiator_socket->nb_transport_fw(payload, phase, delay_time);
-		wait(transactionFinished_event);
-
+		MEASURE_TRANSFER_TIME(
+				tlm_resp = initiator_socket->nb_transport_fw(payload, phase, delay_time);
+				wait(transactionFinished_event);
+		)
 		if(payload.get_response_status() == TLM_INCOMPLETE_RESPONSE){
 			continue;
 		}
@@ -127,25 +130,12 @@ void Cpu::startTransaction(tlm_command command, soc_address_t address,
 	} while(true);
 }
 
-void Cpu::startTransactionTimingWrapped(tlm_command command, soc_address_t address,
-                           unsigned char *data, unsigned int dataSize){
-	MEASURE_TRANSFER_TIME(
-			startTransaction(command, address, data, dataSize);
-	)
-}
-
 void Cpu::discardDescriptor(){
 	startTransaction(TLM_WRITE_COMMAND,
 	                 0x10000000,
 	                 (unsigned char *) &m_packet_descriptor,
 	                 sizeof(m_packet_descriptor));
 }
-
-void Cpu::discardDescriptorTimingWrapped(){
-	MEASURE_TRANSFER_TIME(discardDescriptor();)
-}
-
-
 
 // ####################### UP TO HERE ####################### //
 
