@@ -25,16 +25,9 @@ int sc_main(int argc, char *argv[]);
  */
 int sc_main(int argc, char *argv[]) {
 
-	/**********************************************************************/
-	/*                     Command line parsing                           */
-	/**********************************************************************/
-
-	// you can ignore this section, it is used to read in the required
-	// parameters from the command line
 
 	ArgvParser cmd;
 
-	// init
 	cmd.setIntroductoryDescription(
 			"You can set the simulation parameters on the command line with the following switches.");
 
@@ -114,14 +107,6 @@ int sc_main(int argc, char *argv[]) {
 
 	nSlaves = nMacs + 1/*IO module mem. manager*/+ 1/*RAM*/+ 0/*acc*/;
 
-	/*********************************************************************/
-	/*                 End of command line parsing                       */
-	/*********************************************************************/
-
-
-	/*********************************************************************/
-	/*                           modules                                 */
-	/*********************************************************************/
 
 	// system bus
 	SimpleBusAT bus("bus", nMasters, nSlaves, bus_width);
@@ -137,10 +122,6 @@ int sc_main(int argc, char *argv[]) {
 	for(unsigned int i = 0; i < n_cpus; i++) {
 		cpus[i] = new Cpu(cpu_names[i]);
 	}
-
-	/**********************************************************************/
-	/*                           wiring                                   */
-	/**********************************************************************/
 
 	// interrupt lines
 	sc_signal<bool> dma_irq;
@@ -175,16 +156,9 @@ int sc_main(int argc, char *argv[]) {
 
 	initialize_statistics();
 
-	/**********************************************************************/
-	/*                       start simulation                             */
-	/**********************************************************************/
 	sc_start(); // run as long as needed for the specified number of packets
 
-	/**********************************************************************/
-	/*                       print statistics                             */
-	/**********************************************************************/
-	cout
-			<< "===================================================================="
+	cout << "===================================================================="
 			<< "\n\tload statistics\n"
 			<< "===================================================================="
 			<< endl;
@@ -193,8 +167,7 @@ int sc_main(int argc, char *argv[]) {
 	}
 	bus.output_load();
 
-	cout
-			<< "===================================================================="
+	cout << "===================================================================="
 			<< "\n\tpacket statistics\n"
 			<< "===================================================================="
 			<< endl;
@@ -205,10 +178,6 @@ int sc_main(int argc, char *argv[]) {
 	cout << "latency:\n\tmin: " << min_latency << "\n\tmax: " << max_latency
 			<< "\n\tavg: " << total_latency / n_packets_sent << endl;
 
-	/**********************************************************************/
-	/*                            cleanup                                 */
-	/**********************************************************************/
-	// delete dynamically allocated processors
 	for(unsigned int i = 0; i < n_cpus; i++) {
 		delete cpus[i];
 	}

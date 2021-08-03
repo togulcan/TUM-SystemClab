@@ -16,9 +16,12 @@ fifo_3::fifo_3(sc_module_name name, unsigned int fifo_size) :
 		r_peq("read_peq"),
 		w_peq("write_peq")
 {
+	// ############# COMPLETE THE FOLLOWING SECTION ############# //
 	// register nb_transport_fw function with sockets
 	fifo2prod_socket.register_nb_transport_fw(this, &fifo_3::nb_transport_fw);
 	fifo2consum_socket.register_nb_transport_fw(this, &fifo_3::nb_transport_fw);
+
+	// ####################### UP TO HERE ####################### //
 
 	// register the read and write processes with the simulation kernel
 	SC_THREAD(read_fifo);
@@ -63,11 +66,15 @@ void fifo_3::read_fifo() {
 			status = TLM_OK_RESPONSE;
 
 		// handle read
+		cout << std::setw(9) << sc_time_stamp() << ": '" << name() << "' "
+		     << len << " words have been written: 0x " << hex;
 		for(unsigned int i=0; i < len; i++){
+			cout << std::setw(2) << std::setfill('0') << (int)*(fifo_data + rd_ptr)<< " ";
 			*(ptr + i) = *(fifo_data + rd_ptr);
 			rd_ptr = (rd_ptr + 1) % fifo_size;
 			fill_level--;
 		}
+		cout << dec << endl;
 
 		if(fifo_size <= 50)
 			output_fifo_status();
@@ -77,7 +84,15 @@ void fifo_3::read_fifo() {
 		payload->set_data_length(len);
 		phase = BEGIN_RESP;
 		delay = SC_ZERO_TIME;
-		fifo2consum_socket->nb_transport_bw(*payload, phase, delay);
+		tlm_resp = fifo2consum_socket->nb_transport_bw(*payload, phase, delay);
+		// check response
+		if(tlm_resp != TLM_COMPLETED || phase != END_RESP) {
+			cout << std::setw(9) << sc_time_stamp() << ": '" << name()
+			     << "'\tprotocol error! "
+			     << "Read request not completed appropriately!" << endl;
+			exit(1);
+		}
+		// ####################### UP TO HERE ####################### //
 	}
 }
 
@@ -109,8 +124,12 @@ void fifo_3::write_fifo() {
 			status = TLM_OK_RESPONSE;
 
 		// handle write
+		cout  << std::setw(9) << sc_time_stamp() << ": '" << name() << "' "
+		     << len << " words have been written: 0x " << hex;
+
 		ptr = payload->get_data_ptr();
 		for(unsigned int i=0; i < len; i++){
+			cout << std::setw(2) << std::setfill('0') << (int)*(ptr + i) << " ";
 			*(fifo_data + wr_ptr) = *(ptr + i);
 			wr_ptr = (wr_ptr + 1) % fifo_size;
 			fill_level++;
@@ -124,7 +143,13 @@ void fifo_3::write_fifo() {
 		payload->set_data_length(len);
 		phase = BEGIN_RESP;
 		delay = SC_ZERO_TIME;
-		fifo2prod_socket->nb_transport_bw(*payload, phase, delay);
+		tlm_resp = fifo2prod_socket->nb_transport_bw(*payload, phase, delay);
+		if(tlm_resp != TLM_COMPLETED || phase != END_RESP) {
+			cout << std::setw(9) << sc_time_stamp() << ": '" << name()
+			     << "'\tprotocol error! "
+			     << "Read request not completed appropriately!" << endl;
+			exit(1);
+		}
 	}
 }
 

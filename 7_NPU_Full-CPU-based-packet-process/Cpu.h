@@ -16,9 +16,6 @@ using namespace sc_core;
 
 SC_MODULE(Cpu) {
 
-	// *******========================================================******* //
-	// *******                  sockets, ports                        ******* //
-	// *******========================================================******* //
 public:
 	/// bus master socket
 	simple_initiator_socket<Cpu> initiator_socket;
@@ -27,9 +24,6 @@ public:
 	/// finishes the transfer of a received packet into the RAM.
 	sc_in<bool> packetReceived_interrupt;
 
-	// *******========================================================******* //
-	// *******           member objects, variables                    ******* //
-	// *******========================================================******* //
 private:
 	/// Unique processor ID.
 	/// Assigned at construction time. It is used to access an Accelerator.
@@ -46,9 +40,6 @@ private:
 	/// event to signal when the return path returns the read data
 	sc_event transactionFinished_event;
 
-	// *******========================================================******* //
-	// *******        additional declarations for exercise 7          ******* //
-	// *******========================================================******* //
 	/// header of the IP packet that the processor works on (wrapper)
 	IpPacket m_packet_header;
 
@@ -56,10 +47,6 @@ private:
 	/// Not used if the system contains accelerator(s)
 	RoutingTable m_rt;
 
-	// *******========================================================******* //
-	// *******        additional declarations for exercise 8          ******* //
-	// *******========================================================******* //
-	// variables for load evaluation
 
 	/// Time spent with computation.
 	/// Only modify its value using the MEASURE_PROCESSING_TIME macro.
@@ -72,9 +59,6 @@ private:
 	// start of a measured time period
 	sc_time period_start_time;
 
-	// *******========================================================******* //
-	// *******            member functions, processes                 ******* //
-	// *******========================================================******* //
 private:
 	/**
 	 * Implementation for the initiator socket backward interface. This is the
@@ -104,12 +88,6 @@ private:
 	 */
 	void startTransaction(tlm_command command, soc_address_t address,
 			unsigned char *data, unsigned int dataSize);
-
-	// *******========================================================******* //
-	// *******        additional declarations for exercise 7          ******* //
-	// *******========================================================******* //
-	// functions for packet processing implementations in
-	// $HOME/npu_common/Cpu_proc.cpp
 
 	/**
 	 * Calculates checksum of the IP v4 packet header.
@@ -160,16 +138,7 @@ private:
 	 */
 	void updateChecksum(IpPacket& header);
 
-	//#############################################
-	// You may add additional function from here...
-	//#############################################
-
 	void discardDescriptor();
-
-
-	//#############################################
-	// Until here
-	//#############################################
 
 public:
 	/**
@@ -178,9 +147,6 @@ public:
 	void output_load() const;
 public:
 
-	// *******========================================================******* //
-	// *******                      constructor                       ******* //
-	// *******========================================================******* //
 	SC_CTOR(Cpu) :
 		initiator_socket("initiator_socket"),
 		m_id(Cpu::instances++),
@@ -196,10 +162,6 @@ private:
 	/// field
 	static unsigned int instances;
 };
-
-// *******========================================================******* //
-// *******        additional declarations for exercise 8          ******* //
-// *******========================================================******* //
 
 /// Wrapper macro to record the time used for the transfer.
 /// usage: Put the transaction code inside the parentheses, and

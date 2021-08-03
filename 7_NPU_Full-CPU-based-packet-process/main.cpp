@@ -12,13 +12,9 @@ using namespace sc_core;
 
 int sc_main(int argc, char *argv[]) {
 
-	// set some global variables; see $HOME/npu_common/globaldefs.h
 	do_logging = 0x0;
 	MAX_PACKETS = 20;
 
-	/*********************************************************************/
-	/*                           modules                                 */
-	/*********************************************************************/
 	unsigned int nMasters = n_cpus + nMacs;
 	unsigned int nSlaves = nMacs + 1/*IO module mem. manager*/+ 1/*RAM*/;
 
@@ -36,10 +32,6 @@ int sc_main(int argc, char *argv[]) {
 	for(unsigned int i = 0; i < n_cpus; i++) {
 		cpus[i] = new Cpu(cpu_names[i]);
 	}
-
-	/**********************************************************************/
-	/*                           wiring                                   */
-	/**********************************************************************/
 
 	// interrupt lines
 	sc_signal<bool> dma_irq;
@@ -74,26 +66,15 @@ int sc_main(int argc, char *argv[]) {
 
 	initialize_statistics();
 
-	/**********************************************************************/
-	/*                       start simulation                             */
-	/**********************************************************************/
 	sc_start(); // run as long as needed for the specified number of packets
 
-	/**********************************************************************/
-	/*                       print statistics                             */
-	/**********************************************************************/
-
-	cout
-			<< "===================================================================="
+	cout << "===================================================================="
 			<< "\n\tpacket statistics\n"
 			<< "===================================================================="
 			<< endl;
 	cout << "n_packets_received = " << n_packets_received
 			<< "\nn_packets_sent = " << n_packets_sent << endl << endl;
 
-	/**********************************************************************/
-	/*                            cleanup                                 */
-	/**********************************************************************/
 	// delete dynamically allocated processors
 	for(unsigned int i = 0; i < n_cpus; i++) {
 		delete cpus[i];

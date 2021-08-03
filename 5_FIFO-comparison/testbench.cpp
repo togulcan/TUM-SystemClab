@@ -3,7 +3,7 @@
 #include "testbench.h"
 
 testbench::testbench(sc_module_name name, unsigned int fifo_size,
-                     unsigned int min_words, unsigned int rnd_range) :
+		unsigned int min_words, unsigned int rnd_range) :
 		fifo_size(fifo_size),
 		min_words(min_words),
 		rnd_range(rnd_range)
@@ -61,7 +61,7 @@ void testbench::testbench_thr() {
 
 	// start TEST_FIFO_1A
 	cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-	     << "' starting TEST_FIFO_1A" << endl;
+			<< "' starting TEST_FIFO_1A" << endl;
 	before_test = high_resolution_clock::now();
 	fifo_test = TEST_FIFO_1A;
 	start_test.notify(0, SC_NS);
@@ -70,13 +70,13 @@ void testbench::testbench_thr() {
 	after_test = high_resolution_clock::now();
 	test_time = duration_cast<duration<double>>(after_test - before_test);
 	cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-	     << "' TEST_FIFO_1A finished. Test time was " << test_time.count()
-	     << " seconds." << endl << endl;
+			<< "' TEST_FIFO_1A finished. Test time was " << test_time.count()
+			<< " seconds." << endl << endl;
 	reset();
 
 	// start TEST_FIFO_1B
 	cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-	     << "' starting TEST_FIFO_1B" << endl;
+			<< "' starting TEST_FIFO_1B" << endl;
 	before_test = high_resolution_clock::now();
 	fifo_test = TEST_FIFO_1B;
 	start_test.notify(0, SC_NS);
@@ -85,13 +85,13 @@ void testbench::testbench_thr() {
 	after_test = high_resolution_clock::now();
 	test_time = duration_cast<duration<double>>(after_test - before_test);
 	cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-	     << "' TEST_FIFO_1B finished. Test time was " << test_time.count()
-	     << " seconds." << endl << endl;
+			<< "' TEST_FIFO_1B finished. Test time was " << test_time.count()
+			<< " seconds." << endl << endl;
 	reset();
 
 	// start TEST_FIFO_2
 	cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-	     << "' starting TEST_FIFO_2" << endl;
+			<< "' starting TEST_FIFO_2" << endl;
 	before_test = high_resolution_clock::now();
 	fifo_test = TEST_FIFO_2;
 	start_test.notify(0, SC_NS);
@@ -100,13 +100,13 @@ void testbench::testbench_thr() {
 	after_test = high_resolution_clock::now();
 	test_time = duration_cast<duration<double>>(after_test - before_test);
 	cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-	     << "' TEST_FIFO_2 finished. Test time was " << test_time.count()
-	     << " seconds." << endl << endl;
+			<< "' TEST_FIFO_2 finished. Test time was " << test_time.count()
+			<< " seconds." << endl << endl;
 	reset();
 
 	// start TEST_FIFO_3
 	cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-	     << "' starting TEST_FIFO_3" << endl;
+			<< "' starting TEST_FIFO_3" << endl;
 	before_test = high_resolution_clock::now();
 	fifo_test = TEST_FIFO_3;
 	start_test.notify(0, SC_NS);
@@ -115,12 +115,12 @@ void testbench::testbench_thr() {
 	after_test = high_resolution_clock::now();
 	test_time = duration_cast<duration<double>>(after_test - before_test);
 	cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-	     << "' TEST_FIFO_3 finished. Test time was " << test_time.count()
-	     << " seconds." << endl << endl;
+			<< "' TEST_FIFO_3 finished. Test time was " << test_time.count()
+			<< " seconds." << endl << endl;
 	reset();
 
 	cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-	     << "' stopping simulation" << endl;
+			<< "' stopping simulation" << endl;
 	sc_stop();
 }
 
@@ -161,8 +161,8 @@ void testbench::write_trigger() {
 			// safe guard to not let queue get too large
 			if(wr_queue > (unsigned int)(1 << 31)) {
 				cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-				     << "'\tError! wr_queue too large: " << wr_queue << "!"
-				     << endl;
+						<< "'\tError! wr_queue too large: " << wr_queue << "!"
+						<< endl;
 				exit(1);
 			}
 			// issue write (for tests 2 + 3)
@@ -197,8 +197,8 @@ void testbench::read_trigger() {
 			// safe guard to not let queue get too large
 			if(rd_queue > (unsigned int)(1 << 31)) {
 				cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-				     << "'\tError! rd_queue too large: " << rd_queue << "!"
-				     << endl;
+						<< "'\tError! rd_queue too large: " << rd_queue << "!"
+						<< endl;
 				exit(1);
 			}
 			// issue read (for tests 2 + 3)
@@ -256,19 +256,19 @@ void testbench::test_fifo_1a_rd() {
 					consumed_data = fifo_1a_out.read();
 					if (consumed_data != test_data[rd_ptr]) {
 						cout << std::setw(12) << sc_time_stamp() << ": '"
-						     << name() << "'\tError! Reading "
-						     << (int)consumed_data
-						     << " from FIFO 1a but expecting "
-						     << (int)test_data[rd_ptr] << "!"
-						     << " rd_ptr: " << rd_ptr << endl;
+								<< name() << "'\tError! Reading "
+								<< (int)consumed_data
+								<< " from FIFO 1a but expecting "
+								<< (int)test_data[rd_ptr] << "!"
+								<< " rd_ptr: " << rd_ptr << endl;
 						exit(1);
 					}
 					rd_ptr++;
 					rd_queue--;
 				}
 				if(fifo_1a_rd_en.read() == true &&
-				   fifo_1a_empty.read() == false &&
-				   rd_queue > 0)
+						fifo_1a_empty.read() == false &&
+						rd_queue > 0)
 				{
 					fifo_1a_data_valid.write(true);
 				}
@@ -327,11 +327,11 @@ void testbench::test_fifo_1b_rd() {
 					consumed_data = fifo_1b_out.read();
 					if (consumed_data != test_data[rd_ptr]) {
 						cout << std::setw(12) << sc_time_stamp() << ": '"
-						     << name() << "'\tError! Reading "
-						     << (int)consumed_data
-						     << " from FIFO 1b but expecting "
-						     << (int)test_data[rd_ptr] << "!"
-						     << " rd_ptr: " << rd_ptr << endl;
+								<< name() << "'\tError! Reading "
+								<< (int)consumed_data
+								<< " from FIFO 1b but expecting "
+								<< (int)test_data[rd_ptr] << "!"
+								<< " rd_ptr: " << rd_ptr << endl;
 						exit(1);
 					}
 					rd_ptr++;
@@ -374,11 +374,11 @@ void testbench::test_fifo_2_wr() {
 				// if write was successful and queue is not empty, write again
 				if(success && wr_queue > 0)
 					wait(100, SC_NS);
-					// if write was not fully successful but no more events will be
-					// issued, try again until successful
+				// if write was not fully successful but no more events will be
+				// issued, try again until successful
 				else if(!success && wr_ptr + wr_queue == DATA_SIZE)
 					wait(100, SC_NS);
-					// otherwise, wait for next event
+				// otherwise, wait for next event
 				else
 					wait(write_event);
 			} // inner while(true)
@@ -404,11 +404,11 @@ void testbench::test_fifo_2_rd() {
 				for(unsigned int i = 0; i < rd_len; i++) {
 					if(read_data[i] != test_data[rd_ptr + i]) {
 						cout << std::setw(12) << sc_time_stamp() << ": '"
-						     << name() << "'\tError! Reading "
-						     << (int)read_data[i]
-						     << " from FIFO 2 but expecting "
-						     << (int)test_data[rd_ptr + i] << "!"
-						     << " rd_ptr: " << rd_ptr << endl;
+								<< name() << "'\tError! Reading "
+								<< (int)read_data[i]
+								<< " from FIFO 2 but expecting "
+								<< (int)test_data[rd_ptr + i] << "!"
+								<< " rd_ptr: " << rd_ptr << endl;
 						exit(1);
 					}
 				}
@@ -421,11 +421,11 @@ void testbench::test_fifo_2_rd() {
 				// if read was successful and queue is not empty, read again
 				if(success && rd_queue > 0)
 					wait(100, SC_NS);
-					// if read was not fully successful but no more events will be
-					// issued, try again until successful
+				// if read was not fully successful but no more events will be
+				// issued, try again until successful
 				else if(!success && rd_ptr + rd_queue == DATA_SIZE)
 					wait(100, SC_NS);
-					// otherwise, wait for next event
+				// otherwise, wait for next event
 				else
 					wait(read_event);
 			} // inner while(true)
@@ -471,9 +471,9 @@ void testbench::test_fifo_3_wr() {
 				tlm_resp = fifo_3_wr_socket->nb_transport_fw(trans, phase, delay);
 				if(tlm_resp != TLM_UPDATED || phase != END_REQ) {
 					cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-					     << "'\tprotocol error! "
-					     << "Write request not completed appropriately!"
-					     << endl;
+							<< "'\tprotocol error! "
+							<< "Write request not completed appropriately!"
+							<< endl;
 					exit(1);
 				}
 
@@ -486,8 +486,8 @@ void testbench::test_fifo_3_wr() {
 				tlm_stat = trans.get_response_status();
 				if(tlm_stat != TLM_OK_RESPONSE && tlm_stat != TLM_BURST_ERROR_RESPONSE) {
 					cout << sc_time_stamp() << ": '" << name()
-					     << "'\tUnhandled return status in test_fifo_3_wr!" << endl;
-					exit(1);
+							<< "'\tUnhandled return status in test_fifo_3_wr!" << endl;
+							exit(1);
 				}
 
 				// update write queue and read pointer
@@ -501,11 +501,11 @@ void testbench::test_fifo_3_wr() {
 				// if write was successful and queue is not empty, write again
 				if(wr_len == written && wr_queue > 0)
 					wait(100, SC_NS);
-					// if write was not fully successful but no more events will be
-					// issued, try again until successful
+				// if write was not fully successful but no more events will be
+				// issued, try again until successful
 				else if(wr_len != written && wr_ptr + wr_queue == DATA_SIZE)
 					wait(100, SC_NS);
-					// otherwise, wait for next event
+				// otherwise, wait for next event
 				else
 					wait(write_event);
 			}
@@ -545,9 +545,9 @@ void testbench::test_fifo_3_rd() {
 				tlm_resp = fifo_3_rd_socket->nb_transport_fw(trans, phase, delay);
 				if(tlm_resp != TLM_UPDATED || phase != END_REQ) {
 					cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-					     << "'\tprotocol error! "
-					     << "Read request not completed appropriately!"
-					     << endl;
+							<< "'\tprotocol error! "
+							<< "Read request not completed appropriately!"
+							<< endl;
 					exit(1);
 				}
 
@@ -560,8 +560,8 @@ void testbench::test_fifo_3_rd() {
 				tlm_stat = trans.get_response_status();
 				if(tlm_stat != TLM_OK_RESPONSE && tlm_stat != TLM_BURST_ERROR_RESPONSE) {
 					cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-					     << "'\tUnhandled return status in test_fifo_3_rd!" << endl;
-					exit(1);
+							<< "'\tUnhandled return status in test_fifo_3_rd!" << endl;
+							exit(1);
 				}
 
 				read = trans.get_data_length();
@@ -569,11 +569,11 @@ void testbench::test_fifo_3_rd() {
 				for(unsigned int i = 0; i < read; i++) {
 					if(read_data[i] != test_data[rd_ptr + i]) {
 						cout << std::setw(12) << sc_time_stamp() << ": '"
-						     << name() << "'\tError! Reading "
-						     << (int)read_data[i]
-						     << " from FIFO 3 but expecting "
-						     << (int)test_data[rd_ptr + i] << "!"
-						     << " rd_ptr: " << rd_ptr << endl;
+								<< name() << "'\tError! Reading "
+								<< (int)read_data[i]
+								<< " from FIFO 3 but expecting "
+								<< (int)test_data[rd_ptr + i] << "!"
+								<< " rd_ptr: " << rd_ptr << endl;
 						exit(1);
 					}
 				}
@@ -588,11 +588,11 @@ void testbench::test_fifo_3_rd() {
 				// if read was successful and queue is not empty, read again
 				if(rd_len == read && rd_queue > 0)
 					wait(100, SC_NS);
-					// if read was not fully successful but no more events will be
-					// issued, try again until successful
+				// if read was not fully successful but no more events will be
+				// issued, try again until successful
 				else if(rd_len != read && rd_ptr + rd_queue == DATA_SIZE)
 					wait(100, SC_NS);
-					// otherwise, wait for next event
+				// otherwise, wait for next event
 				else
 					wait(read_event);
 			} // inner while(true)
@@ -607,13 +607,13 @@ tlm_sync_enum testbench::nb_transport_bw_wr(
 		tlm_generic_payload &payload,
 		tlm_phase &phase,
 		sc_time &delay_time
-)
+		)
 {
 	if(phase != BEGIN_RESP) {
 		cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-		     << "'\tprotocol error! "
-		     << "Write response not completed appropriately!"
-		     << endl;
+				<< "'\tprotocol error! "
+				<< "Write response not completed appropriately!"
+				<< endl;
 		exit(1);
 	}
 
@@ -632,13 +632,13 @@ tlm_sync_enum testbench::nb_transport_bw_rd(
 		tlm_generic_payload &payload,
 		tlm_phase &phase,
 		sc_time &delay_time
-)
+		)
 {
 	if(phase != BEGIN_RESP) {
 		cout << std::setw(12) << sc_time_stamp() << ": '" << name()
-		     << "'\tprotocol error! "
-		     << "Read response not completed appropriately!"
-		     << endl;
+				<< "'\tprotocol error! "
+				<< "Read response not completed appropriately!"
+				<< endl;
 		exit(1);
 	}
 

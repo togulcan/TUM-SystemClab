@@ -16,9 +16,6 @@ using namespace sc_core;
 
 SC_MODULE(Cpu) {
 
-	// *******========================================================******* //
-	// *******                  sockets, ports                        ******* //
-	// *******========================================================******* //
 public:
 	/// bus master socket
 	simple_initiator_socket<Cpu> initiator_socket;
@@ -27,9 +24,6 @@ public:
 	/// finishes the transfer of a received packet into the RAM.
 	sc_in<bool> packetReceived_interrupt;
 
-	// *******========================================================******* //
-	// *******           member objects, variables                    ******* //
-	// *******========================================================******* //
 private:
 	/// Unique processor ID.
 	/// Assigned at construction time. It is used to access an Accelerator.
@@ -46,9 +40,6 @@ private:
 	/// event to signal when the return path returns the read data
 	sc_event transactionFinished_event;
 
-	// *******========================================================******* //
-	// *******            member functions, processes                 ******* //
-	// *******========================================================******* //
 private:
 	/**
 	 * Implementation for the initiator socket backward interface. This is the
@@ -79,21 +70,8 @@ private:
 	void startTransaction(tlm_command command, soc_address_t address,
 			unsigned char *data, unsigned int dataSize);
 
-	//#############################################
-	// You may add additional function from here...
-	//#############################################
-
-
-
-	//#############################################
-	// Until here
-	//#############################################
-
 public:
 
-	// *******========================================================******* //
-	// *******                      constructor                       ******* //
-	// *******========================================================******* //
 	SC_CTOR(Cpu) :
 		initiator_socket("initiator_socket"),
 		m_id(Cpu::instances++)

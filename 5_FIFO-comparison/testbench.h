@@ -9,7 +9,6 @@
 #define TEST_FIFO_2 2
 #define TEST_FIFO_3 3
 
-// to make things more readable ...
 using namespace sc_core;
 using namespace tlm;
 using namespace tlm_utils;

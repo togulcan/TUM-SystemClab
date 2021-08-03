@@ -18,12 +18,9 @@ int sc_main(int argc, char *argv[]) {
 	sc_signal<bool> empty;
 	sc_signal<unsigned int> data_valid;
 	sc_signal<bool> fetch;
-
 	producer prod("producer");
 	consumer cons("consumer");
 	fifo_1a fifo("fifo", 5);
-
-	// register signals
 	prod.clk(clk);
 	cons.clk(clk);
 	fifo.clk(clk);
@@ -40,6 +37,11 @@ int sc_main(int argc, char *argv[]) {
 	cons.d_in(d_out);
 	cons.rd_en(rd_en);
 
+	// ####################### UP TO HERE ####################### //
+
+	// ############# COMPLETE THE FOLLOWING SECTION ############# //
+	// fill in code to generate traces that can be used to observe the
+	// functionality of the model with the waveform viewer gtkwave
 	sc_trace_file *tf = sc_create_vcd_trace_file("traces");
 	sc_trace(tf, clk, "clock");
 	sc_trace(tf, d_in, "d_in");
@@ -49,6 +51,7 @@ int sc_main(int argc, char *argv[]) {
 	sc_trace(tf, full, "full");
 	sc_trace(tf, empty, "empty");
 
+	// ####################### UP TO HERE ####################### //
 
 	sc_time sim_dur = sc_time(5000, SC_NS);
 	if(argc != 2) {

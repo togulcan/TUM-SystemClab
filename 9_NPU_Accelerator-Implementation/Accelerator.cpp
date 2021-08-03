@@ -5,13 +5,10 @@
 using namespace sc_core;
 using namespace std;
 
-// ############# COMPLETE THE FOLLOWING SECTION ############# //
 // complete constructor parameters
 	Accelerator::Accelerator(sc_module_name name, unsigned int cycles):
 			ACC_IP_LOOKUP_CYCLES(cycles),
 	// enter the required initializationes here
-
-// ####################### UP TO HERE ####################### //
 
 		// further initializations - leave them as they are
 		// Initialize requests depth and call other constructors
@@ -152,7 +149,6 @@ tlm_sync_enum Accelerator::nb_transport_fw(tlm_generic_payload& payload,
 				<< delay << std::endl;
 
 	return TLM_UPDATED; // parameters modified but transaction not yet finished
-
 }
 
 void Accelerator::output_load() const {
@@ -162,6 +158,3 @@ void Accelerator::output_load() const {
 			<< (total_processing_time) / (sc_time_stamp()) * 100 << "%."
 			<< endl;
 }
-
-/// file name for recording
-//static const char* filename = "Accelerator.cpp";

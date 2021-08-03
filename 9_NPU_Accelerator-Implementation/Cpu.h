@@ -16,9 +16,6 @@ using namespace sc_core;
 
 SC_MODULE(Cpu) {
 
-	// *******========================================================******* //
-	// *******                  sockets, ports                        ******* //
-	// *******========================================================******* //
 public:
 	/// bus master socket
 	simple_initiator_socket<Cpu> initiator_socket;
@@ -27,15 +24,9 @@ public:
 	/// finishes the transfer of a received packet into the RAM.
 	sc_in<bool> packetReceived_interrupt;
 
-	// *******========================================================******* //
-	// *******        additional declaration for exercise 9           ******* //
-	// *******========================================================******* //
 	/// Interrupt line used by the accelerator to signal when lookup is ready.
 	sc_in<bool> lookupReady_interrupt;
 
-	// *******========================================================******* //
-	// *******           member objects, variables                    ******* //
-	// *******========================================================******* //
 private:
 	/// Unique processor ID.
 	/// Assigned at construction time. It is used to access an Accelerator.
@@ -52,9 +43,6 @@ private:
 	/// event to signal when the return path returns the read data
 	sc_event transactionFinished_event;
 
-	// *******========================================================******* //
-	// *******        additional declarations for exercise 7          ******* //
-	// *******========================================================******* //
 	/// header of the IP packet that the processor works on (wrapper)
 	IpPacket m_packet_header;
 
@@ -62,12 +50,7 @@ private:
 	/// Not used if the system contains accelerator(s)
 	RoutingTable m_rt;
 
-	// *******========================================================******* //
-	// *******        additional declarations for exercise 8          ******* //
-	// *******========================================================******* //
 public:
-	// variables for load evaluation
-	// we need access from sc_main
 
 	/// Time spent with computation.
 	/// Only modify its value using the MEASURE_PROCESSING_TIME macro.
@@ -80,14 +63,8 @@ public:
 	// start of a measured time period
 	sc_time period_start_time;
 
-	// *******========================================================******* //
-	// *******        additional declaration for exercise 9           ******* //
-	// *******========================================================******* //
 	LookupRequest m_lookup_request;
 
-	// *******========================================================******* //
-	// *******            member functions, processes                 ******* //
-	// *******========================================================******* //
 private:
 	/**
 	 * Implementation for the initiator socket backward interface. This is the
@@ -101,28 +78,9 @@ private:
 			tlm_phase& phase,					// transaction phase
 			sc_time& time);						// elapsed time
 
-	/**
-	 * Main thread, this does all the processing.
-	 */
 	void processor_thread(void);
-
-	/**
-	 * Start a 2-phase transaction with the given arguments.
-	 *
-	 * @param command - TLM_READ_COMMAND or TLM_WRITE_COMMAND
-	 * @param address - the address of the destination/source of the data
-	 * @param data    - pointer to the data that is written or pointer to a
-	 *                  buffer where the data is going to be stored
-	 * @param dataSize - size of the data in bytes
-	 */
 	void startTransaction(tlm_command command, soc_address_t address,
 			unsigned char *data, unsigned int dataSize);
-
-	// *******========================================================******* //
-	// *******        additional declarations for exercise 7          ******* //
-	// *******========================================================******* //
-	// functions for packet processing implementations in
-	// $HOME/npu_common/Cpu_proc.cpp
 
 	/**
 	 * Calculates checksum of the IP v4 packet header.
@@ -173,22 +131,13 @@ private:
 	 */
 	void updateChecksum(IpPacket& header);
 
-	//#############################################
-	// You may add additional function from here...
-	//#############################################
 
 	void startTransactionTimingWrapped(tlm_command command, soc_address_t address,
 		unsigned char *data, unsigned int dataSize);
 
 	void discardDescriptor();
 
-	void discardDescriptorTimingWrapped();
-
 	std::vector<soc_address_t> outports{0x20000000, 0x30000000, 0x40000000, 0x50000000};
-
-	//#############################################
-	// Until here
-	//#############################################
 
 public:
 	/**
@@ -197,9 +146,6 @@ public:
 	void output_load() const;
 public:
 
-	// *******========================================================******* //
-	// *******                      constructor                       ******* //
-	// *******========================================================******* //
 	SC_CTOR(Cpu) :
 		initiator_socket("initiator_socket"),
 		m_id(Cpu::instances++),
@@ -216,29 +162,11 @@ private:
 	static unsigned int instances;
 };
 
-// *******========================================================******* //
-// *******        additional declarations for exercise 8          ******* //
-// *******========================================================******* //
-
-/// Wrapper macro to record the time used for the transfer.
-/// usage: Put the transaction code inside the parentheses, and
-///        the total_transfer_time member variable will be increased
-///        according to the consumed time.
-/// prerequisite: declared members sc_time period_start_time and
-///               sc_time total_transfer_time
-/// @see MEASURE_PROCESSING_TIME
 #define MEASURE_TRANSFER_TIME(code)                                 \
 		period_start_time = sc_time_stamp();                        \
 		code                                                        \
 		total_transfer_time += sc_time_stamp() - period_start_time;
 
-/// Wrapper macro to record the time used for processing.
-/// usage: Put the processing code inside the parentheses, and
-///        the total_processing_time member variable will be increased
-///        according to the consumed time.
-/// prerequisite: declared members sc_time period_start_time and
-///               sc_time total_processing_time
-/// @see MEASURE_TRANSFER_TIME
 #define MEASURE_PROCESSING_TIME(code)                               \
 		period_start_time = sc_time_stamp();                        \
 		code                                                        \

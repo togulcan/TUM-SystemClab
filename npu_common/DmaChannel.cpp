@@ -30,11 +30,12 @@ void DmaChannel::initiator_thread(void) {
 		unsigned int n_free_slots = free_memory_addresses->num_available();
 		unsigned int n_waiting_input_packets = mac_in_port->num_available();
 		unsigned int n_waiting_tasks = task_queue.num_available();
+		unsigned int n_free_output = mac_out_port->num_free();
 		// Wait until
 		// 1) there is either input from the MACs with free slot in the memory to write to or
 		// 2) a command from the CPUs and the possibility to transmit packets over the output line.
 		while(!(n_waiting_input_packets && n_free_slots)
-				&& (!n_waiting_tasks && mac_out_port->num_free())) {
+				&& !(n_waiting_tasks && n_free_output)) {
 			wait(
 					task_queue.data_written_event()
 							| mac_in_port->data_written_event()
@@ -45,6 +46,7 @@ void DmaChannel::initiator_thread(void) {
 			n_free_slots = free_memory_addresses->num_available();
 			n_waiting_input_packets = mac_in_port->num_available();
 			n_waiting_tasks = task_queue.num_available();
+			n_free_output = mac_out_port->num_free();
 		}
 
 		//======================================================================

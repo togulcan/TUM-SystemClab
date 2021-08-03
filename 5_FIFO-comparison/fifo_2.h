@@ -1,8 +1,8 @@
 #ifndef __FIFO_2
 #define __FIFO_2
 
-// include the necessary header files
 #include "fifo_if.h"
+
 
 class fifo_2: public fifo_if, public sc_module {
 private:
@@ -19,7 +19,6 @@ public:
 	bool read_fifo(unsigned char *data, unsigned int &count);
 	bool write_fifo(unsigned char *data, unsigned int &count);
 
-	// constructor declaration
 	SC_HAS_PROCESS(fifo_2);
 	fifo_2(sc_module_name name, unsigned int fifo_size=50);
 };

@@ -41,7 +41,6 @@ private:
 	void output_fifo_status();
 
 public:
-	// constructor declaration
 	SC_HAS_PROCESS(fifo_3);
 	fifo_3(sc_module_name name, unsigned int fifo_size=50);
 };

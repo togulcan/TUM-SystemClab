@@ -11,8 +11,6 @@ void Cpu::processor_thread(void) {
 	sc_time delay_time;
 
 	while(true) {
-		// ############# COMPLETE THE FOLLOWING SECTION ############# //
-		// read new packet descriptor
 		wait(packetReceived_interrupt.value_changed_event());
 
 		std::vector<soc_address_t> outports{0x20000000, 0x30000000, 0x40000000, 0x50000000};
@@ -49,13 +47,10 @@ void Cpu::processor_thread(void) {
 				                 (unsigned char *) &m_packet_header,
 				                 sizeheader);
 			}
-			// ####################### UP TO HERE ####################### //
 		}
 	}
 }
 
-// ############# COMPLETE THE FOLLOWING SECTION ############# //
-// startTransaction
 void Cpu::startTransaction(tlm_command command, soc_address_t address,
                            unsigned char *data, unsigned int dataSize){
 	tlm_phase phase;
@@ -97,12 +92,8 @@ void Cpu::discardDescriptor(){
 	                 sizeof(m_packet_descriptor));
 }
 
-// ####################### UP TO HERE ####################### //
-
-// nb_transport_bw: implementation of the backward path callback
 tlm_sync_enum Cpu::nb_transport_bw(tlm_generic_payload& transaction,
                                    tlm_phase& phase, sc_time& delay_time) {
-	// ############# COMPLETE THE FOLLOWING SECTION ############# //
 	if(phase != BEGIN_RESP) {
 		cerr << "expected BEGIN_RESP but not received" << endl;
 		exit(1);
@@ -112,8 +103,6 @@ tlm_sync_enum Cpu::nb_transport_bw(tlm_generic_payload& transaction,
 	transactionFinished_event.notify(delay_time);
 	phase = END_RESP;
 	return TLM_COMPLETED;
-
-	// ####################### UP TO HERE ####################### //
 }
 
 unsigned int Cpu::instances = 0;

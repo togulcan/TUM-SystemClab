@@ -18,23 +18,22 @@ bool fifo_2::write_fifo(unsigned char *data, unsigned int &count) {
 	ptr = data;
 	sc_time delay;
 
-	if(fill_level + (int)count > fifo_size) {// not enough space for all data
+	if(fill_level + (int)count > fifo_size) // not enough space for all data
 		len = fifo_size - fill_level; 		// none or less data will be written
-		count = len;
-	}
 	else {
 		len = count;
 		result = true;
 	}
 
 	// complete process
+	count = len;
+	wait(100*len, SC_NS);
 	for(unsigned int i=0; i < len; i++){
+		//cout << std::setw(2) << std::setfill('0') << (int)*(ptr + i) << " ";
 		*(fifo_data + wr_ptr) = *(ptr + i);
 		wr_ptr = (wr_ptr + 1) % fifo_size;
 		fill_level++;
 	}
-//	if(fifo_size <= 50)
-//		output_fifo_status();
 	return result;
 }
 
@@ -46,32 +45,29 @@ bool fifo_2::read_fifo(unsigned char *data, unsigned int &count) {
 	ptr = data;
 	sc_time delay;
 
-	if(fill_level < count){	// not enough data to read
+	if(fill_level < count)	// not enough data to read
 		len = fill_level;	// none or less data will be read
-		count = len;
-	}
 	else {
 		len = count;
 		result = true;
 	}
 
-	// complete process
+	count = len;
+	wait(100*len, SC_NS);
 	for(unsigned int i=0; i < len; i++){
+		//cout << std::setw(2) << std::setfill('0') << (int)*(fifo_data + rd_ptr)<< " ";
 		*(ptr + i) = *(fifo_data + rd_ptr);
 		rd_ptr = (rd_ptr + 1) % fifo_size;
 		fill_level--;
 	}
-
-//	if(fifo_size <= 50)
-//		output_fifo_status();
 	return result;
 }
 
 // helper function to output content of FIFO
 void fifo_2::output_fifo_status() {
 	cout << "\tCurrent status of '" << name() << "': write address: "
-		 << wr_ptr << ", read address: " << rd_ptr
-		 << ", fill level: " << fill_level << endl;
+			<< wr_ptr << ", read address: " << rd_ptr
+			<< ", fill level: " << fill_level << endl;
 	cout << "\t";
 	cout << hex; // switch to hexadecimal mode;
 	if(fill_level == 0) {
@@ -81,13 +77,13 @@ void fifo_2::output_fifo_status() {
 	else if(fill_level == fifo_size) {
 		for(unsigned int i = 0; i < fifo_size; i++)
 			cout << std::setw(2) << std::setfill('0') << (int)*(fifo_data + i)
-				 << " ";
+					<< " ";
 	}
 	else if(wr_ptr > rd_ptr) {
 		for(unsigned int i = 0; i < fifo_size; i++) {
 			if((i >= rd_ptr) && (i < wr_ptr)) {
 				cout << std::setw(2) << std::setfill('0')
-					 << (int)*(fifo_data + i) << " ";
+						<< (int)*(fifo_data + i) << " ";
 			}
 			else
 				cout << "-- ";
@@ -97,7 +93,7 @@ void fifo_2::output_fifo_status() {
 		for(unsigned int i = 0; i < fifo_size; i++) {
 			if((i >= rd_ptr) || (i < wr_ptr)) {
 				cout << std::setw(2) << std::setfill('0')
-					 << (int)*(fifo_data + i) << " ";
+						<< (int)*(fifo_data + i) << " ";
 			}
 			else
 				cout << "-- ";

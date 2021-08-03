@@ -76,6 +76,11 @@ void PcapImporter::load_thread() {
 			pcap_close (m_handle);
 			m_handle = pcap_open_offline(m_file_name, 0);
 			temp = pcap_next(m_handle, &pcapPacketHeader);
+			// use first packet for time synchronization and immediately move
+			// on to next packet
+			m_last_packet_time = pcapPacketHeader.ts;
+			m_packets_read--;
+			continue;
 		}
 		// check assumptions
 		assert(pcapPacketHeader.caplen < IpPacket::PACKET_MAX_SIZE);
@@ -154,10 +159,6 @@ void PcapImporter::load_thread() {
 
 				// post packet into the MAC FIFO
 				sendPacket(p);
-			}
-			else {
-				// packet not sent into the system, push back to the queue
-				unused_packets_queue->push(p);
 			}
 
 		}

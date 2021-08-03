@@ -4,7 +4,6 @@
 #include "tlm.h"
 #include "systemc.h"
 
-// to make things easier readable...
 using namespace sc_core;
 using namespace tlm;
 using namespace tlm_utils;
@@ -62,22 +61,26 @@ void fifo_3::read_fifo() {
 		else
 			status = TLM_OK_RESPONSE;
 
-		// handle read
 		for(unsigned int i=0; i < len; i++){
+		//	cout << std::setw(2) << std::setfill('0') << (int)*(fifo_data + rd_ptr)<< " ";
 			*(ptr + i) = *(fifo_data + rd_ptr);
 			rd_ptr = (rd_ptr + 1) % fifo_size;
 			fill_level--;
 		}
-
-//		if(fifo_size <= 50)
-//			output_fifo_status();
 
 		// prepare backward call, call nb_transport_bw, and evaluate response
 		payload->set_response_status(status);
 		payload->set_data_length(len);
 		phase = BEGIN_RESP;
 		delay = SC_ZERO_TIME;
-		fifo2consum_socket->nb_transport_bw(*payload, phase, delay);
+		tlm_resp = fifo2consum_socket->nb_transport_bw(*payload, phase, delay);
+		// check response
+		if(tlm_resp != TLM_COMPLETED || phase != END_RESP) {
+			cout << std::setw(9) << sc_time_stamp() << ": '" << name()
+			     << "'\tprotocol error! "
+			     << "Read request not completed appropriately!" << endl;
+			exit(1);
+		}
 	}
 }
 
@@ -93,7 +96,6 @@ void fifo_3::write_fifo() {
 	tlm_generic_payload *payload;
 
 	while(true) {
-		// wait for write to be triggered from write payload event queue
 		wait();
 
 		// get the transaction out of the write payload event queue and get
@@ -108,23 +110,26 @@ void fifo_3::write_fifo() {
 		else
 			status = TLM_OK_RESPONSE;
 
-		// handle write
 		ptr = payload->get_data_ptr();
 		for(unsigned int i=0; i < len; i++){
+			//cout << std::setw(2) << std::setfill('0') << (int)*(ptr + i) << " ";
 			*(fifo_data + wr_ptr) = *(ptr + i);
 			wr_ptr = (wr_ptr + 1) % fifo_size;
 			fill_level++;
 		}
-
-//		if(fifo_size <= 50)
-//			output_fifo_status();
 
 		// prepare backward call, call nb_transport_bw, and evaluate response
 		payload->set_response_status(status);
 		payload->set_data_length(len);
 		phase = BEGIN_RESP;
 		delay = SC_ZERO_TIME;
-		fifo2prod_socket->nb_transport_bw(*payload, phase, delay);
+		tlm_resp = fifo2prod_socket->nb_transport_bw(*payload, phase, delay);
+		if(tlm_resp != TLM_COMPLETED || phase != END_RESP) {
+			cout << std::setw(9) << sc_time_stamp() << ": '" << name()
+			     << "'\tprotocol error! "
+			     << "Read request not completed appropriately!" << endl;
+			exit(1);
+		}
 	}
 }
 
@@ -133,19 +138,20 @@ tlm_sync_enum fifo_3::nb_transport_fw(
 		tlm_generic_payload &payload,	// ref to Generic Payload
 		tlm_phase &phase,				// ref to phase
 		sc_time &delay_time				// ref to delay time
-)
+		)
 {
 	// check whether transaction is initiated correctly
 	if(phase != BEGIN_REQ) {
-//		cout << std::setw(9) << sc_time_stamp() << ": '" << name()
-//		     << "'\tprotocol error! "
-//		     << "nb_transport_fw call with phase!=BEGIN_REQ!" << endl;
+		cout << std::setw(9) << sc_time_stamp() << ": '" << name()
+				<< "'\tprotocol error! "
+				<< "nb_transport_fw call with phase!=BEGIN_REQ!" << endl;
 		exit(1);
 	}
 
 	// determine operation and how much data is involved
 	tlm_command cmd = payload.get_command();
 	unsigned int len = payload.get_data_length();
+
 
 	if(cmd == TLM_WRITE_COMMAND) {
 		// increase delay to cycle time multiplied by number of words written
@@ -175,8 +181,8 @@ tlm_sync_enum fifo_3::nb_transport_fw(
 // helper function to output content of FIFO
 void fifo_3::output_fifo_status() {
 	cout << "\tCurrent status of '" << name() << "': write address: "
-		 << wr_ptr << ", read address: " << rd_ptr
-		 << ", fill level: " << fill_level << endl;
+			<< wr_ptr << ", read address: " << rd_ptr
+			<< ", fill level: " << fill_level << endl;
 	cout << "\t";
 	cout << hex; // switch to hexadecimal mode;
 	if(fill_level == 0) {
@@ -186,13 +192,13 @@ void fifo_3::output_fifo_status() {
 	else if(fill_level == fifo_size) {
 		for(unsigned int i = 0; i < fifo_size; i++)
 			cout << std::setw(2) << std::setfill('0') << (int)*(fifo_data + i)
-				 << " ";
+					<< " ";
 	}
 	else if(wr_ptr > rd_ptr) {
 		for(unsigned int i = 0; i < fifo_size; i++) {
 			if((i >= rd_ptr) && (i < wr_ptr)) {
 				cout << std::setw(2) << std::setfill('0')
-					 << (int)*(fifo_data + i) << " ";
+						<< (int)*(fifo_data + i) << " ";
 			}
 			else
 				cout << "-- ";
@@ -202,7 +208,7 @@ void fifo_3::output_fifo_status() {
 		for(unsigned int i = 0; i < fifo_size; i++) {
 			if((i >= rd_ptr) || (i < wr_ptr)) {
 				cout << std::setw(2) << std::setfill('0')
-					 << (int)*(fifo_data + i) << " ";
+						<< (int)*(fifo_data + i) << " ";
 			}
 			else
 				cout << "-- ";
